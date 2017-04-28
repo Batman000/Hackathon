@@ -1,0 +1,12 @@
+1."I ll be there in 5 min"
+2.Mark the accident spots and giving path for least accident probability(from survey or users)
+3.Use of finger print to test if drunk or not
+4.Parking spots
+5.Where I parked my car?
+6.Incoming ambulance(Using frequency detection)
+7.Detect the spots where people violate traffic rules and why?.Reporting it to RTO.
+8.How the road is?
+9.No horn spots
+10.Incresing speed
+11.Detect if the driver is falling asleep
+12.Alert when to leave for work according to the traffic.
