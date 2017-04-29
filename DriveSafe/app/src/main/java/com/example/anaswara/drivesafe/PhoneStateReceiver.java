@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
  */
 
 public class PhoneStateReceiver extends BroadcastReceiver {
+    ITelephony telephonyService;
     public void onReceive(Context context, Intent intent) {
         try {
             System.out.println("Receiver start");
@@ -44,11 +45,11 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             Class c = Class.forName(tm.getClass().getName());
             Method m = c.getDeclaredMethod("getITelephony");
             m.setAccessible(true);
-            ITelephony telephonyService = (ITelephony) m.invoke(tm);
+            telephonyService = (ITelephony) m.invoke(tm);
             Bundle bundle = intent.getExtras();
             String phoneNumber = bundle.getString("incoming_number");
             Log.d("INCOMING", phoneNumber);
-            if ((phoneNumber == "+917907400348")) {
+            if ((phoneNumber!=null)) {
                 telephonyService.endCall();
                 Log.d("HANG UP", phoneNumber);
             }
