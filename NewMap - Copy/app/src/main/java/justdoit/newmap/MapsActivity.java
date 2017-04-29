@@ -2,14 +2,14 @@ package justdoit.newmap;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import android.location.Location;
 //import android.location.LocationListener;
 
 
@@ -63,9 +64,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //int speed=(int) ((location.getSpeed()) is the standard which returns meters per second. In this example i converted it to kilometers per hour
 
                     int speed=(int) ((location.getSpeed()*3600)/1000);
-                    Intent intent = new Intent(MapsActivity.this, PhoneStateReceiver.class);
-                    intent.putExtra("message", speed);
-
 
                     yourTextView.setText(speed+" km/h");
                 }

@@ -1,4 +1,4 @@
-package com.example.anaswara.drivesafe;
+package justdoit.newmap;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 
 public class PhoneStateReceiver extends BroadcastReceiver {
     ITelephony telephonyService;
-    MainActivity mActivity= new MainActivity();
+    MapsActivity mActivity= new MapsActivity();
     PendingIntent pi = null;
 
 
@@ -33,7 +33,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             String incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
             if(state.equals(TelephonyManager.EXTRA_STATE_RINGING)){
-               // Toast.makeText(context,"Incoming Call State",Toast.LENGTH_SHORT).show();
+                // Toast.makeText(context,"Incoming Call State",Toast.LENGTH_SHORT).show();
                 Toast.makeText(context,"Ringing State Number is -"+incomingNumber,Toast.LENGTH_SHORT).show();
 
 
@@ -60,7 +60,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             if ((phoneNumber!=null)) {
                 telephonyService.endCall();
                 Log.d("HANG UP", phoneNumber);
-                sendMysms(phoneNumber,"I'm DRIVING");
+                sendMysms(phoneNumber,"I'm driving");
             }
 
 
@@ -69,13 +69,13 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         }
 
 
-        }
+    }
     public void sendMysms(String phone,String message) {
 
         System.out.print("SEND MYsdf SMS");
 //        String phone = "8606018392";
 //        String message = "I m khgytr driving";
-       // Toast.makeText(mActivity.context, "In Function", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(mActivity.context, "In Function", Toast.LENGTH_SHORT).show();
         //Check if the phoneNumber is empty
         System.out.print("in funv");
         if (phone.isEmpty()) {
@@ -90,10 +90,10 @@ public class PhoneStateReceiver extends BroadcastReceiver {
 
 
 
-                //PendingIntent sentIntent = PendingIntent.getBroadcast(mActivity.context, 0, new Intent("SMS_SENT"), 0);
-                //PendingIntent deliveredIntent = PendingIntent.getBroadcast(mActivity.context, 0, new Intent("SMS_DELIVERED"), 0);
-                sms.sendTextMessage(phone, null, message, pi, null);
-                System.out.print("SENT");
+            //PendingIntent sentIntent = PendingIntent.getBroadcast(mActivity.context, 0, new Intent("SMS_SENT"), 0);
+            //PendingIntent deliveredIntent = PendingIntent.getBroadcast(mActivity.context, 0, new Intent("SMS_DELIVERED"), 0);
+            sms.sendTextMessage(phone, null, message, pi, null);
+            System.out.print("SENT");
 
 
         }

@@ -2,100 +2,79 @@ package com.example.anaswara.drivesafe;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.ContactsContract;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.telephony.SmsManager;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.support.v4.app.ActivityCompat;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.List;
+public class MainActivity extends Activity implements LocationListener {
 
-import static android.Manifest.permission.SEND_SMS;
+    LocationManager lm;
+    TextView yourTextView;
 
-public class MainActivity extends AppCompatActivity {
-
-    private static final int REQUEST_SMS = 0;
-    private static final int REQ_PICK_CONTACT = 2 ;
-    private EditText phoneEditText;
-    private EditText messageEditText;
-
-    private Button sendButton;
-    private ImageView pickContact;
-    private TextView sendStatusTextView;
-    private TextView deliveryStatusTextView;
-    public Context context= null;
-    private BroadcastReceiver sentStatusReceiver, deliveredStatusReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        yourTextView=(TextView)findViewById(R.id.message_status_text_view);
 
-        context = MainActivity.this;
+        lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        this.onLocationChanged(null);
 
-        phoneEditText = (EditText) findViewById(R.id.phone_number_edit_text);
-        messageEditText = (EditText) findViewById(R.id.message_edit_text);
-        sendButton = (Button) findViewById(R.id.send_button);
-        sendStatusTextView = (TextView) findViewById(R.id.message_status_text_view);
-        deliveryStatusTextView = (TextView) findViewById(R.id.delivery_status_text_view);
-        pickContact = (ImageView) findViewById(R.id.add_contact_image_view);
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        }
 
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    int hasSMSPermission = checkSelfPermission(Manifest.permission.SEND_SMS);
-                    if (hasSMSPermission != PackageManager.PERMISSION_GRANTED) {
-                        if (!shouldShowRequestPermissionRationale(Manifest.permission.SEND_SMS)) {
-                            showMessageOKCancel("You need to allow access to Send SMS",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                requestPermissions(new String[] {Manifest.permission.SEND_SMS},
-                                                        REQUEST_SMS);
-                                            }
-                                        }
-                                    });
-                            return;
-                        }
-                        requestPermissions(new String[] {Manifest.permission.SEND_SMS},
-                                REQUEST_SMS);
-                        return;
-                    }
-                    //sendMySMS();
-                }
-            }
-        });
+    @Override
+    public void onLocationChanged(Location location) {
 
-        pickContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
-                startActivityForResult(intent, 2);
-            }
-        });
+
+        if (location==null){
+            // if you can't get speed because reasons :)
+            yourTextView.setText("00 km/h");
+        }
+        else{
+            //int speed=(int) ((location.getSpeed()) is the standard which returns meters per second. In this example i converted it to kilometers per hour
+
+            int speed=(int) ((location.getSpeed()*3600)/1000);
+            Intent i = new Intent(this, PhoneStateReceiver.class);
+            i.putExtra("SPEED", speed);
+
+            yourTextView.setText(speed+" km/h");
+        }
+
     }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
+    }
+
 
 //    public void sendMySMS() {
 //
@@ -119,146 +98,7 @@ public class MainActivity extends AppCompatActivity {
 //
 //        }
 //    }
-    public void onResume() {
-        super.onResume();
-        sentStatusReceiver=new BroadcastReceiver() {
 
-            @Override
-            public void onReceive(Context arg0, Intent arg1) {
-                String s = "Unknown Error";
-                switch (getResultCode()) {
-                    case Activity.RESULT_OK:
-                        s = "Message Sent Successfully !!";
-                        break;
-                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                        s = "Generic Failure Error";
-                        break;
-                    case SmsManager.RESULT_ERROR_NO_SERVICE:
-                        s = "Error : No Service Available";
-                        break;
-                    case SmsManager.RESULT_ERROR_NULL_PDU:
-                        s = "Error : Null PDU";
-                        break;
-                    case SmsManager.RESULT_ERROR_RADIO_OFF:
-                        s = "Error : Radio is off";
-                        break;
-                    default:
-                        break;
-                }
-                sendStatusTextView.setText(s);
-
-            }
-        };
-        deliveredStatusReceiver=new BroadcastReceiver() {
-
-            @Override
-            public void onReceive(Context arg0, Intent arg1) {
-                String s = "Message Not Delivered";
-                switch(getResultCode()) {
-                    case Activity.RESULT_OK:
-                        s = "Message Delivered Successfully";
-                        break;
-                    case Activity.RESULT_CANCELED:
-                        break;
-                }
-                deliveryStatusTextView.setText(s);
-                phoneEditText.setText("");
-                messageEditText.setText("");
-            }
-        };
-        registerReceiver(sentStatusReceiver, new IntentFilter("SMS_SENT"));
-        registerReceiver(deliveredStatusReceiver, new IntentFilter("SMS_DELIVERED"));
-    }
-
-
-    public void onPause() {
-        super.onPause();
-        unregisterReceiver(sentStatusReceiver);
-        unregisterReceiver(deliveredStatusReceiver);
-    }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    private boolean checkPermission() {
-        return ( ContextCompat.checkSelfPermission(getApplicationContext(), SEND_SMS ) == PackageManager.PERMISSION_GRANTED);
-    }
-
-    private void requestPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{SEND_SMS}, REQUEST_SMS);
-    }
-
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_SMS:
-                if (grantResults.length > 0 &&  grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(getApplicationContext(), "Permission Granted, Now you can access sms", Toast.LENGTH_SHORT).show();
-                    //sendMySMS();
-
-                }else {
-                    Toast.makeText(getApplicationContext(), "Permission Denied, You cannot access and sms", Toast.LENGTH_SHORT).show();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (shouldShowRequestPermissionRationale(SEND_SMS)) {
-                            showMessageOKCancel("You need to allow access to both the permissions",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                requestPermissions(new String[]{SEND_SMS},
-                                                        REQUEST_SMS);
-                                            }
-                                        }
-                                    });
-                            return;
-                        }
-                    }
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
-                .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
-                .create()
-                .show();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // TODO Auto-generated method stub
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQ_PICK_CONTACT) {
-            if (resultCode == RESULT_OK) {
-                Uri contactData = data.getData();
-                Cursor cursor = managedQuery(contactData, null, null, null, null);
-                cursor.moveToFirst();
-
-                String number = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                phoneEditText.setText(number);
-            }
-        }
-    }
 
 }
 
