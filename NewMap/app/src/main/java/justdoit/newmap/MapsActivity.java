@@ -64,7 +64,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     int speed=(int) ((location.getSpeed()*3600)/1000);
                     Intent intent = new Intent(MapsActivity.this, PhoneStateReceiver.class);
-                    intent.putExtra("message", speed);
+                    intent.putExtra("MyKey", speed);
 
 
                     yourTextView.setText(speed+" km/h");

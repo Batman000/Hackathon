@@ -3,7 +3,6 @@ package com.example.anaswara.drivesafe;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -16,6 +15,7 @@ public class MainActivity extends Activity implements LocationListener {
 
     LocationManager lm;
     TextView yourTextView;
+    public int sp =0;
 
 
     @Override
@@ -51,11 +51,12 @@ public class MainActivity extends Activity implements LocationListener {
         else{
             //int speed=(int) ((location.getSpeed()) is the standard which returns meters per second. In this example i converted it to kilometers per hour
 
-            int speed=(int) ((location.getSpeed()*3600)/1000);
-            Intent i = new Intent(this, PhoneStateReceiver.class);
-            i.putExtra("SPEED", speed);
+            sp=(int) ((location.getSpeed()*3600)/1000);
 
-            yourTextView.setText(speed+" km/h");
+//            Intent i = new Intent(this, PhoneStateReceiver.class);
+//            i.putExtra("SPEED", speed);
+
+            yourTextView.setText(sp+" km/h");
         }
 
     }

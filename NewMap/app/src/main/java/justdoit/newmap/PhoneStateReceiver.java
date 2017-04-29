@@ -57,6 +57,10 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             Bundle bundle = intent.getExtras();
             String phoneNumber = bundle.getString("incoming_number");
             Log.d("INCOMING", phoneNumber);
+
+
+            int speed = mActivity.getIntent().getExtras().getInt("MyKey");
+
             if ((phoneNumber!=null)) {
                 telephonyService.endCall();
                 Log.d("HANG UP", phoneNumber);
@@ -87,8 +91,6 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             // if message length is too long messages are divided
 
             System.out.println(message);
-
-
 
             //PendingIntent sentIntent = PendingIntent.getBroadcast(mActivity.context, 0, new Intent("SMS_SENT"), 0);
             //PendingIntent deliveredIntent = PendingIntent.getBroadcast(mActivity.context, 0, new Intent("SMS_DELIVERED"), 0);

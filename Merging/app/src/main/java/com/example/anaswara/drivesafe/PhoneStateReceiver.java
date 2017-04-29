@@ -57,7 +57,9 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             Bundle bundle = intent.getExtras();
             String phoneNumber = bundle.getString("incoming_number");
             Log.d("INCOMING", phoneNumber);
-            if ((phoneNumber!=null)) {
+            int speed = mActivity.sp;
+            if ((phoneNumber!=null) && speed>2 ) {
+                System.out.print("SPEED:"+ speed);
                 telephonyService.endCall();
                 Log.d("HANG UP", phoneNumber);
                 sendMysms(phoneNumber,"I'm DRIVING");
