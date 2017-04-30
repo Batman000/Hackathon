@@ -65,6 +65,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                 telephonyService.endCall();
                 Log.d("HANG UP", phoneNumber);
                 sendMysms(phoneNumber,"I'm driving");
+
             }
 
 

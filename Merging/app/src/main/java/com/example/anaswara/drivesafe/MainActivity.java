@@ -2,13 +2,19 @@ package com.example.anaswara.drivesafe;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements LocationListener {
@@ -21,6 +27,9 @@ public class MainActivity extends Activity implements LocationListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         yourTextView=(TextView)findViewById(R.id.message_status_text_view);
 
@@ -38,6 +47,7 @@ public class MainActivity extends Activity implements LocationListener {
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         this.onLocationChanged(null);
 
+        //addNotification();
         }
 
     @Override
@@ -46,7 +56,7 @@ public class MainActivity extends Activity implements LocationListener {
 
         if (location==null){
             // if you can't get speed because reasons :)
-            yourTextView.setText("00 km/h");
+            yourTextView.setText("0 km/h");
         }
         else{
             //int speed=(int) ((location.getSpeed()) is the standard which returns meters per second. In this example i converted it to kilometers per hour
@@ -56,7 +66,7 @@ public class MainActivity extends Activity implements LocationListener {
 //            Intent i = new Intent(this, PhoneStateReceiver.class);
 //            i.putExtra("SPEED", speed);
 
-            yourTextView.setText(sp+" km/h");
+            yourTextView.setText("Speed:"+sp+" km/h");
         }
 
     }
@@ -75,6 +85,25 @@ public class MainActivity extends Activity implements LocationListener {
     public void onProviderDisabled(String s) {
 
     }
+
+
+    public void addNotification() {
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this)
+                        .setContentTitle("Notifications Example")
+                        .setContentText("This is a test notification");
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
+    }
+
+
 
 
 //    public void sendMySMS() {

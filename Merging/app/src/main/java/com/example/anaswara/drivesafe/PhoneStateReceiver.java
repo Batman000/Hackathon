@@ -26,6 +26,8 @@ public class PhoneStateReceiver extends BroadcastReceiver {
 
 
     public void onReceive(Context context, Intent intent) {
+
+
         pi = PendingIntent.getBroadcast(context, 0, intent, 0);
         try {
             System.out.println("Receiver start");
@@ -58,11 +60,12 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             String phoneNumber = bundle.getString("incoming_number");
             Log.d("INCOMING", phoneNumber);
             int speed = mActivity.sp;
-            if ((phoneNumber!=null) && speed>2 ) {
+            if ((phoneNumber!=null) && speed>40 ) {
                 System.out.print("SPEED:"+ speed);
                 telephonyService.endCall();
                 Log.d("HANG UP", phoneNumber);
                 sendMysms(phoneNumber,"I'm DRIVING");
+                //mActivity.addNotification();
             }
 
 
