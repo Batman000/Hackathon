@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Odie</string>
+    <string name="speed">Speed</string>
+    <string name="button">Button</string>
+    <string name="_0_km_hour">0 Km/hour</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCX7mMXJLQ79Mwrmbq2kNz8jEXLgT8HxOQ</string>
+</resources>
